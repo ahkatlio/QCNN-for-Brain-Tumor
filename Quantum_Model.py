@@ -54,6 +54,22 @@ test_labels = pd.get_dummies(test_labels).values
 train_datagen = ImageDataGenerator(rotation_range=15, width_shift_range=0.1, height_shift_range=0.1, shear_range=0.1, zoom_range=0.2, horizontal_flip=True, vertical_flip=True, fill_mode="nearest")
 train_datagen.fit(train_data)
 
+####################################data visualization############################################
+# Plotting the images
+plt.figure(0, figsize=(12,6))
+for i in range(1, 13):
+    plt.subplot(3, 4, i)
+    plt.imshow(train_data[i], cmap='gray')
+    plt.xlabel(train_labels[i])
+plt.tight_layout()
+plt.show()
+
+# Plotting the count of each category
+plt.figure(figsize=(10, 6))
+sns.countplot(x=train_labels[:,0])
+plt.title("Count of each category")
+plt.show()
+
 ####################################Quantum Model############################################
 # Quantum circuit
 def circuit(params, wires):
@@ -133,19 +149,12 @@ def training(var, features, labels, steps, shots):
 
 # Accuracy
 def accuracy(labels, predictions):
-    """
-    Computes the accuracy of the predictions.
-
-    Args:
-        labels (array): True labels.
-        predictions (array): Predicted labels.
-
-    Returns:
-        float: The accuracy of the predictions.
-    """
-    predictions = np.array(predictions)
-    predictions = predictions.reshape(-1, 1)
-    return np.mean(np.allclose(labels, predictions))
+    acc = 0
+    for l, p in zip(labels, predictions):
+        if np.array_equal(l, p):
+            acc = acc + 1
+    acc = acc / len(labels)
+    return acc
 
 # Initial parameters
 np.random.seed(0)
